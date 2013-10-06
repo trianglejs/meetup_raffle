@@ -13,3 +13,9 @@ To get this to work please create a `key.json` file with your Meetup key that yo
     {
       "key": "your key here"
 	}
+
+### Run the page ###
+
+	node index.js
+
+	then navigate to localhost:3000

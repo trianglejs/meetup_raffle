@@ -1,0 +1,45 @@
+body {
+	background-color: #333;
+	color: #efefef;
+	font-size: 60px;
+	font-family: 'Roboto', sans-serif;
+	padding: 60px;
+}
+
+.container {
+	text-align: center;
+}
+
+#center {
+	position: absolute;
+	width: 800px;
+	height: 100px;
+	left: 50%;
+	margin-left: -400px;
+	top: 50%;
+	margin-top: -50px;
+}
+
+#winner {
+	display: none;
+	font-size: 80px;
+}
+
+.second {
+	display: none;
+}
+
+.scaleIt {
+	-webkit-animation-name: scaleIt;
+	-webkit-animation-duration: 1s;
+}
+
+@-webkit-keyframes scaleIt {
+	0% {
+		-webkit-transform: scale(1);
+	}
+
+	100% {
+		-webkit-transform: scale(3);
+	}
+}
