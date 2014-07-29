@@ -5,9 +5,11 @@
 	$(document).ready(function() {
 		var time = 5,
 			start = 5,
+			spinner,
 			$timerBtn = $('#timerBtn'),
 			$timer = $('#timer'),
 			$winner = $('#winner'),
+			$next = $('#next').hide(),
 			spinnerOptions = {
 				lines: 14, // The number of lines to draw
 				length: 20, // The length of each line
@@ -30,13 +32,75 @@
 		function getWinner() {
 			$timer.empty();
 
-			var target = document.getElementById('timer'),
-				spinner = new Spinner(spinnerOptions).spin(target);
+			var target = document.getElementById('timer')
+			spinner = new Spinner(spinnerOptions).spin(target);
 
-			$.getJSON('/pick-winner', function(data) {
-				$winner.html(data.member.name).hide().fadeIn();
+			var params = deparam(location.search)
+			if (!params.event_id) {
+				alert('No event_id!');
+				return;
+			}
+			getAttendees(params.event_id);
+		}
+
+		function deparam(search) {
+			var ret = {},
+				seg = search.replace(/^\?/,'').split('&'),
+				len = seg.length, i = 0, s;
+			for (;i<len;i++) {
+				if (!seg[i]) { continue; }
+				s = seg[i].split('=');
+				ret[s[0]] = s[1];
+			}
+			return ret;
+		}
+
+		var attendees = [], theChoosen
+
+		function renderAttendee(attendee) {
+			var out = [];
+			if (attendee.member_photo) {
+				out.push('<img src="'+attendee.member_photo.photo_link +'" class="img-rounded"><br />')
+			}
+			out.push(attendee.member.name)
+			return out.join('')
+		}
+
+		function getAttendees(event_id) {
+			$.getJSON('/attendees',{event_id:event_id}, function(data) {
+				attendees = data.results.filter(yesOrWaitlist);
+				theChoosen = getRandomAttendees(attendees.length, 20);
+				setWinner(0);
+				$next.show();
 				spinner.stop();
-			});
+			})
+		}
+
+		function setWinner(index) {
+			if (index >= theChoosen.length) {
+				index = 0
+			}
+			$winner.html(renderAttendee(attendees[theChoosen[index]])).hide().fadeIn().data('index', index);
+		}
+
+		function getRandomAttendees(max, howMany) {
+		    var picked = [], choosen;
+		    for(;;) {
+		        choosen = getRandomInt(0, max-1)
+		        if (!~picked.indexOf(choosen)) {
+		            picked.push(choosen)
+		        }
+		        if (howMany == picked.length) break;
+		    }
+		    return picked;
+		}
+
+		function getRandomInt (min, max) {
+		    return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+		function yesOrWaitlist(attendee) {
+			return attendee.response == 'yes' || attendee.response == 'waitlist';
 		}
 
 		function countDown() {
@@ -52,6 +116,12 @@
 				}
 			}, 1000);
 		}
+
+		$next.on('click', function(event){
+			event.preventDefault();
+			setWinner($winner.data('index')+1)
+			return false;
+		})
 
 		$timerBtn.on('click', function() {
 			$timerBtn.fadeOut(function() {
