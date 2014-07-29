@@ -117,7 +117,8 @@
 			}, 1000);
 		}
 
-		$next.on('click', function(){
+		$next.on('click', function(event){
+			event.preventDefault();
 			setWinner($winner.data('index')+1)
 			return false;
 		})
