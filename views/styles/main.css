@@ -37,6 +37,10 @@ body {
 	display: none;
 }
 
+.btn {
+	background-image: linear-gradient(to bottom, #d4dee1, #a9c0c8);
+}
+
 .scaleIt {
 	-webkit-animation-name: scaleIt;
 	-webkit-animation-duration: 1s;
